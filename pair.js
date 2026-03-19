@@ -976,7 +976,6 @@ END:VCARD`
       image: imagePayload,
       caption: text,
       footer: `🔥 ${botName} Aʟɪᴠᴇ ⚡`,
-      buttons,
       headerType: 4
     }, { quoted: metaQuote });
 
@@ -1680,8 +1679,7 @@ END:VCARD`
 > *● ᴡᴀʙᴏᴛ ʙʏ Qᴜᴇᴇɴ ʜᴀɴꜱɪ ᴅᴇᴠ ●*
 
 > 🌐 Wᴇʙ : Cᴏᴍɪɴɢ Sᴏᴏɴ
-> 🎬 Tᴜᴛᴏʀɪᴀʟ : Cᴏᴍɪɴɢ Sᴏᴏɴ
-`.trim();
+> 🎬 Tᴜᴛᴏʀɪᴀʟ : Cᴏᴍɪɴɢ Sᴏᴏɴ`.trim();
 
     const defaultImg = 'https://i.ibb.co/8L0XDHPY/IMG-20260130-WA0036.jpg';
     const useLogo = userCfg.logo || defaultImg;
@@ -1696,7 +1694,6 @@ END:VCARD`
       image: imagePayload,
       caption: text,
       footer: "SAMURAI XMD",
-      buttons,
       headerType: 4
     }, { quoted: shonux });
 
