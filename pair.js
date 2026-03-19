@@ -2247,8 +2247,7 @@ case 'admins': {
     };
 
     if (!list || list.length === 0) {
-      return await socket.sendMessage(sender, { text: 'Nᴏ ᴀᴅᴅᴍɪɴꜱ...
-     🥲.' }, { quoted: shonux });
+      return await socket.sendMessage(sender, { text: 'Nᴏ ᴀᴅᴅᴍɪɴꜱ...🥲' }, { quoted: shonux });
     }
 
     let txt = '*👑 Aᴅᴅᴍɪɴꜱ:*\n\n';
