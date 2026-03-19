@@ -847,6 +847,295 @@ case 'ochr': {
   }
 
   try {
+// --------------------------- GETDP ---------------------------
+case 'getdp':
+case 'getpp': {
+    try {
+        const sanitized = (number || '').replace(/[^0-9]/g, '');
+        const cfg = await loadUserConfigFromMongo(sanitized) || {};
+        const botName = cfg.botName || BOT_NAME_FANCY;
+        const logo = cfg.logo || config.RCD_IMAGE_PATH;
+
+        const senderIdSimple = (nowsender || '').includes('@') ? nowsender.split('@')[0] : (nowsender || '');
+
+        let q = msg.message?.conversation?.split(" ")[1] || 
+                msg.message?.extendedTextMessage?.text?.split(" ")[1];
+
+        if (!q) return await socket.sendMessage(sender, { text: "*❌ Pʟᴇᴀꜱᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ɴᴜᴍʙᴇʀ.*\n\n*Uꜱᴀɢᴇ : .ɢᴇᴛᴅᴘ <ɴᴜᴍʙᴇʀ>*" });
+
+        let jid = q.replace(/[^0-9]/g, '') + "@s.whatsapp.net";
+
+        let ppUrl;
+        try {
+            ppUrl = await socket.profilePictureUrl(jid, "image");
+        } catch {
+            ppUrl = "https://i.ibb.co/8L0XDHPY/IMG-20260130-WA0036.jpg";
+        }
+
+        const metaQuote = {
+            key: { remoteJid: "status@broadcast", participant: "0@s.whatsapp.net", fromMe: false, id: "META_AI_GETDP" },
+            message: { contactMessage: { displayName: botName, vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${botName};;;;\nFN:${botName}\nORG:Meta Platforms\nTEL;type=CELL;type=VOICE;waid=13135550002:+1 313 555 0002\nEND:VCARD` } }
+        };
+
+        await socket.sendMessage(sender, { 
+            image: { url: ppUrl }, 
+            caption: `> 🖼 *Pʀᴏꜰɪʟᴇ Pɪᴄᴛᴜʀᴇ ᴏꜰ* +${q}\n> Fᴇᴛᴄʜᴇᴅ ʙʏ : ${botName} ✨`,
+            footer: `> *ᴛʜᴇ ᴄᴏᴅᴇꜱ ᴄʀᴇᴡ ᴍᴅ ᴍɪɴɪ ʙᴏᴛ*`,
+            headerType: 4
+        }, { quoted: metaQuote });
+
+    } catch (e) {
+        console.log("❌ getdp error:", e);
+        await socket.sendMessage(sender, { text: "*ᴇʀʀᴏʀ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴɢ ʟᴀᴛᴇʀ ✨*" });
+    }
+    break;
+  }
+
+// --------------------------- PAIR ---------------------------
+case 'pair': {
+    const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const q = msg.message?.conversation ||
+              msg.message?.extendedTextMessage?.text ||
+              msg.message?.imageMessage?.caption ||
+              msg.message?.videoMessage?.caption || '';
+
+    const number = q.replace(/^[.\/!]pair\s*/i, '').trim();
+
+    if (!number) {
+        return await socket.sendMessage(sender, {
+            text: '*📌 Uꜱᴀɢᴇ:* .ᴘᴀɪʀ +94769194XXXX'
+        }, { quoted: msg });
+    }
+
+    try {
+        const url = `https://queen-9cc6f60a7e53.herokuapp.com/code?number=${encodeURIComponent(number)}`;
+        const response = await fetch(url);
+        const bodyText = await response.text();
+
+        console.log("🌐 API Response:", bodyText);
+
+        let result;
+        try {
+            result = JSON.parse(bodyText);
+        } catch (e) {
+            console.error("❌ JSON Parse Error:", e);
+            return await socket.sendMessage(sender, {
+                text: '❌ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴɢ ʟᴀᴛᴇʀ.'
+            }, { quoted: msg });
+        }
+
+        if (!result || !result.code) {
+            return await socket.sendMessage(sender, {
+                text: '❌ ᴘʟᴇᴀꜱᴇ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ɴᴜᴍʙᴇʀ ʙʀᴏ.'
+            }, { quoted: msg });
+        }
+
+        await socket.sendMessage(sender, {
+            text: `6Ｔʜᴇ Ｃᴏᴅᴇꜱ Ｃʀᴇᴡ Ｍɪɴɪ ⚡*\n\`📌 Sᴛᴇᴘꜱ - Oɴ ʏᴏᴜʀ ᴘʜᴏɴᴇ:\`*\n\n1️⃣ ᴏᴘᴇɴ ᴡʜᴀᴛꜱᴀᴘᴘ\n2️⃣ Tᴀᴘ ᴛʜʀᴇᴇ ᴅᴏᴛꜱ ᴏʀ ɢᴏ ᴛᴏ ꜱᴇᴛᴛɪɴɢꜱ\n3️⃣ Tᴀᴘ ʟɪɴᴋᴇᴅ ᴅᴇᴠɪᴄᴇ\n4️⃣ Tᴀᴘ ʟɪɴᴋ ᴀ ᴅᴇᴠɪᴄᴇ\n5️⃣ Tᴀᴘ ʟɪɴᴋ ᴡɪᴛʜ ᴀ ᴄᴏᴅᴇ\n6️⃣ Eɴᴛᴇʀ ᴛʜᴇ ᴄᴏᴅᴇ ꜱʜᴏᴡɴ ʜʏ ʙᴏᴛ\n\n> 📎Tʜɪꜱ ɪꜱ ʏᴏᴜʀ ᴄᴏᴅᴇ ┆ ${result.code}`
+        }, { quoted: msg });
+
+        await sleep(0000);
+
+        await socket.sendMessage(sender, {
+            text: `${result.code}`
+        }, { quoted: msg });
+
+    } catch (err) {
+        console.error("❌ Pair Command Error:", err);
+        await socket.sendMessage(sender, {
+            text: '❌ Aɴ ᴇʀʀᴏʀ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.'
+        }, { quoted: msg });
+    }
+
+    break;
+} 
+    
+// --------------------------- DELETEME ---------------------------
+case 'deleteme': {
+  const sanitized = (number || '').replace(/[^0-9]/g, '');
+  const senderNum = (nowsender || '').split('@')[0];
+  const ownerNum = config.OWNER_NUMBER.replace(/[^0-9]/g, '');
+
+  if (senderNum !== sanitized && senderNum !== ownerNum) {
+    await socket.sendMessage(sender, { text: '❌ Pᴇʀᴍɪꜱꜱɪᴏɴ ᴅᴇɴɪᴇᴅ.' }, { quoted: msg });
+    break;
+  }
+
+  try {
+    await removeSessionFromMongo(sanitized);
+    await removeNumberFromMongo(sanitized);
+
+    const sessionPath = path.join(os.tmpdir(), `session_${sanitized}`);
+    try {
+      if (fs.existsSync(sessionPath)) {
+        fs.removeSync(sessionPath);
+        console.log(`Removed session folder: ${sessionPath}`);
+      }
+    } catch (e) {
+      console.warn('Failed removing session folder:', e);
+    }
+
+    try {
+      if (typeof socket.logout === 'function') {
+        await socket.logout().catch(err => console.warn('logout error (ignored):', err?.message || err));
+      }
+    } catch (e) { console.warn('socket.logout failed:', e?.message || e); }
+    try { socket.ws?.close(); } catch (e) { console.warn('ws close failed:', e?.message || e); }
+
+    activeSockets.delete(sanitized);
+    socketCreationTime.delete(sanitized);
+
+    await socket.sendMessage(sender, {
+      image: { url: config.RCD_IMAGE_PATH },
+      caption: formatMessage('🗑️ Sᴇꜱꜱɪᴏɴ Dᴇʟᴇᴛᴇᴅ', '✅ Yᴏᴜʀ ꜱᴇꜱꜱɪᴏɴ ʜᴀꜱ ʙᴇᴇɴ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʏ ᴅᴇʟᴇᴛᴇᴅ ꜰʀᴏᴍ ᴍᴏɴɢᴏᴅʙ.', BOT_NAME_FANCY)
+    }, { quoted: msg });
+
+    console.log(`Session ${sanitized} deleted by ${senderNum}`);
+  } catch (err) {
+    console.error('deleteme command error:', err);
+    await socket.sendMessage(sender, { text: `❌ ꜱᴇꜱꜱɪᴏɴ ᴅᴇʟᴇᴛᴇᴅ ᴇʀʀᴏʀ` }, { quoted: msg });
+  }
+  break;
+}
+
+// --------------------------- DELETENUM ---------------------------
+case 'deletemenumber': {
+  const targetRaw = (args && args[0]) ? args[0].trim() : '';
+  if (!targetRaw) {
+    await socket.sendMessage(sender, { text: '❗ Uꜱᴀɢᴇ: .ᴅᴇʟᴇᴛᴇᴍᴇɴᴜᴍʙᴇʀ <ɴᴜᴍʙᴇʀ>' }, { quoted: msg });
+    break;
+  }
+
+  const target = targetRaw.replace(/[^0-9]/g, '');
+  if (!/^\\d{6,}$/.test(target)) {
+    await socket.sendMessage(sender, { text: '❗ Iɴᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀ ᴘʀᴏᴠɪᴅᴇ.' }, { quoted: msg });
+    break;
+  }
+
+  const senderNum = (nowsender || '').split('@')[0];
+  const ownerNum = config.OWNER_NUMBER.replace(/[^0-9]/g, '');
+
+  let allowed = false;
+  if (senderNum === ownerNum) allowed = true;
+  else {
+    try {
+      const adminList = await loadAdminsFromMongo();
+      if (Array.isArray(adminList) && adminList.some(a => a.replace(/[^0-9]/g,'') === senderNum || a === senderNum || a === `${senderNum}@s.whatsapp.net`)) {
+        allowed = true;
+      }
+    } catch (e) {
+      console.warn('Failed checking admin list', e);
+    }
+  }
+
+  if (!allowed) {
+    await socket.sendMessage(sender, { text: '❌ Pᴇʀᴍɪꜱꜱɪᴏɴ ᴅᴇɴɪᴇᴅ.' }, { quoted: msg });
+    break;
+  }
+
+  try {
+    await socket.sendMessage(sender, { text: `🗑️ Dᴇʟᴇᴄᴛɪɴɢ ꜱᴇꜱꜱɪᴏɴ ꜰᴏʀ ${target} — ᴀᴛᴛᴇᴍᴘᴛɪɴɢ ɴᴏᴡ...` }, { quoted: msg });
+
+    const runningSocket = activeSockets.get(target);
+    if (runningSocket) {
+      try {
+        if (typeof runningSocket.logout === 'function') {
+          await runningSocket.logout().catch(e => console.warn('logout error (ignored):', e?.message || e));
+        }
+      } catch (e) { console.warn('Error during logout:', e); }
+      try { runningSocket.ws?.close(); } catch (e) { console.warn('ws close error:', e); }
+      activeSockets.delete(target);
+      socketCreationTime.delete(target);
+    }
+
+    await removeSessionFromMongo(target);
+    await removeNumberFromMongo(target);
+
+    const tmpSessionPath = path.join(os.tmpdir(), `session_${target}`);
+    try {
+      if (fs.existsSync(tmpSessionPath)) {
+        fs.removeSync(tmpSessionPath);
+        console.log(`Removed temp session folder: ${tmpSessionPath}`);
+      }
+    } catch (e) {
+      console.warn('Failed removing tmp session folder:', e);
+    }
+
+    await socket.sendMessage(sender, {
+      image: { url: config.RCD_IMAGE_PATH },
+      caption: formatMessage('🗑️ Sᴇꜱꜱɪᴏɴ ʀᴇᴍᴏᴠᴇᴅ', `✅ Sᴇꜱꜱɪᴏɴ ꜰᴏʀ ɴᴜᴍʙᴇʀ *${target}* ʜᴀꜱ ʙᴇᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ ꜰʀᴏᴍ ᴍᴏɴɢᴏᴅʙ.`, BOT_NAME_FANCY)
+    }, { quoted: msg });
+
+    try {
+      const ownerJid = `${ownerNum}@s.whatsapp.net`;
+      await socket.sendMessage(ownerJid, {
+        text: `👑 Nᴏᴛɪᴄᴇ: Sᴇꜱꜱɪᴏɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ${senderNum}\n→ Nᴜᴍɴᴇʀ: ${target}\n→ Tɪᴍᴇ: ${getSriLankaTimestamp()}`
+      });
+    } catch (e) { }
+
+    console.log(`deletemenumber: removed ${target} (requested by ${senderNum})`);
+  } catch (err) {
+    console.error('deletemenumber error:', err);
+    await socket.sendMessage(sender, { text: `❌ Fᴀɪʟᴇᴅ ꜱᴇꜱꜱɪᴏɴ ᴅᴇʟᴇᴛᴇ ${target}: ${err.message || err}` }, { quoted: msg });
+  }
+
+  break;
+}
+
+// --------------------------- CFN ---------------------------
+case 'cfn': {
+  const sanitized = (number || '').replace(/[^0-9]/g, '');
+  const cfg = await loadUserConfigFromMongo(sanitized) || {};
+  const botName = cfg.botName || BOT_NAME_FANCY;
+  const logo = cfg.logo || config.RCD_IMAGE_PATH;
+
+  const full = body.slice(config.PREFIX.length + command.length).trim();
+  if (!full) {
+    await socket.sendMessage(sender, { text: `❗ Pʀᴏᴠɪᴇᴇ ɪɴᴘᴜᴛ: .ᴄꜰɴ <ᴊɪᴅ@ɴᴇᴡꜱʟᴇᴛᴛᴇʀ> | ᴇᴍᴏᴊɪ1,ᴇᴍᴏᴊɪ2` }, { quoted: msg });
+    break;
+  }
+
+  const admins = await loadAdminsFromMongo();
+  const normalizedAdmins = (admins || []).map(a => (a || '').toString());
+  const senderIdSimple = (nowsender || '').includes('@') ? nowsender.split('@')[0] : (nowsender || '');
+  const isAdmin = normalizedAdmins.includes(nowsender) || normalizedAdmins.includes(senderNumber) || normalizedAdmins.includes(senderIdSimple);
+  if (!(isOwner || isAdmin)) {
+    await socket.sendMessage(sender, { text: '❌ Pᴇʀᴍɪꜱꜱɪᴏɴ ᴅᴇɴɪᴇᴅ.' }, { quoted: msg });
+    break;
+  }
+
+  let jidPart = full;
+  let emojisPart = '';
+  if (full.includes('|')) {
+    const split = full.split('|');
+    jidPart = split[0].trim();
+    emojisPart = split.slice(1).join('|').trim();
+  } else {
+    const parts = full.split(/\s+/);
+    if (parts.length > 1 && parts[0].includes('@newsletter')) {
+      jidPart = parts.shift().trim();
+      emojisPart = parts.join(' ').trim();
+    } else {
+      jidPart = full.trim();
+      emojisPart = '';
+    }
+  }
+
+  const jid = jidPart;
+  if (!jid || !jid.endsWith('@newsletter')) {
+    await socket.sendMessage(sender, { text: '❗ Iɴᴠᴀʟɪᴅ ᴊɪᴅ. Exᴀᴍᴘʟᴇ: 120363405871120956@newsletter' }, { quoted: msg });
+    break;
+  }
+
+  let emojis = [];
+  if (emojisPart) {
+    emojis = emojisPart.includes(',') ? emojisPart.split(',').map(e => e.trim()) : emojisPart.split(/\s+/).map(e => e.trim());
+    if (emojis.length > 20) emojis = emojis.slice(0, 20);
+  }
+
+  try {
     if (typeof socket.newsletterFollow === 'function') {
       await socket.newsletterFollow(jid);
     }
@@ -855,7 +1144,6 @@ case 'ochr': {
 
     const emojiText = emojis.length ? emojis.join(' ') : '(default set)';
 
-    // Meta mention for botName
     const metaQuote = {
       key: { remoteJid: "status@broadcast", participant: "0@s.whatsapp.net", fromMe: false, id: "META_AI_CFN" },
       message: { contactMessage: { displayName: botName, vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${botName};;;;\nFN:${botName}\nORG:Meta Platforms\nTEL;type=CELL;type=VOICE;waid=13135550002:+1 313 555 0002\nEND:VCARD` } }
@@ -865,34 +1153,20 @@ case 'ochr': {
 
     await socket.sendMessage(sender, {
       image: imagePayload,
-      caption: `✅ Channel followed and saved!\n\nJID: ${jid}\nEmojis: ${emojiText}\nSaved by: @${senderIdSimple}`,
-      footer: `📌 ${botName} FOLLOW CHANNEL`,
-      mentions: [nowsender], // user mention
-      buttons: [{ buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📋 MENU" }, type: 1 }],
+      caption: `✅ Cʜᴀɴᴍᴇʟ ꜰᴏʟʟᴏᴡᴇᴅ ᴀɴᴅ ꜱᴀᴠᴇᴅ!\n\nJɪᴅ: ${jid}\nEᴍᴏᴊɪꜱ: ${emojiText}\nSᴀᴠᴇᴅ ʙʏ: @${senderIdSimple}`,
+      footer: `📌 ${botName} Fᴏʟʟᴏᴡ Cʜᴀɴᴍᴇʟ`,
+      mentions: [nowsender],
       headerType: 4
-    }, { quoted: metaQuote }); // <-- botName meta mention
+    }, { quoted: metaQuote });
 
   } catch (e) {
     console.error('cfn error', e);
-    await socket.sendMessage(sender, { text: `❌ Failed to save/follow channel: ${e.message || e}` }, { quoted: msg });
+    await socket.sendMessage(sender, { text: `❌ Fᴀɪʟᴇᴅ ᴛᴏ ꜱᴀᴠᴇ/ꜰᴏʟʟᴏᴡ ᴄʜᴀɴɴᴇʟ: ${e.message || e}` }, { quoted: msg });
   }
   break;
 }
 
-/** CHANNEL REACT CAMMAND **/
-
-
-/** APK DOWNLORD CAMMAND **/
-			  
-
-/** P&RN VIDEO DOWNLORDER **/
-
-
-// ✅ Handle reply for downloading selected video
-
-
-/** STATUS SV CAMMAND **/
-
+// --------------------------- SAVE ---------------------------
 case 'දාපන්':
 case '.save':
 case 'ඔන':
@@ -900,56 +1174,55 @@ case 'save': {
   try {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     if (!quotedMsg) {
-      return await socket.sendMessage(sender, { text: '*❌ Please reply to a message (status/media) to save it.*' }, { quoted: msg });
+      return await socket.sendMessage(sender, { text: '*❌ Pʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇᴅɪᴀ.*' }, { quoted: msg });
     }
 
     try { await socket.sendMessage(sender, { react: { text: '💾', key: msg.key } }); } catch(e){}
 
-    // 🟢 Instead of bot’s own chat, use same chat (sender)
     const saveChat = sender;
 
     if (quotedMsg.imageMessage || quotedMsg.videoMessage || quotedMsg.audioMessage || quotedMsg.documentMessage || quotedMsg.stickerMessage) {
       const media = await downloadQuotedMedia(quotedMsg);
       if (!media || !media.buffer) {
-        return await socket.sendMessage(sender, { text: '❌ Failed to download media.' }, { quoted: msg });
+        return await socket.sendMessage(sender, { text: '❌ Fᴀɪʟᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ᴍᴇᴅɪᴀ' }, { quoted: msg });
       }
 
       if (quotedMsg.imageMessage) {
-        await socket.sendMessage(saveChat, { image: media.buffer, caption: media.caption || '✅ Status Saved' });
+        await socket.sendMessage(saveChat, { image: media.buffer, caption: media.caption || '✅ Sᴛᴀᴛᴜꜱ Sᴀᴠᴇᴅ' });
       } else if (quotedMsg.videoMessage) {
-        await socket.sendMessage(saveChat, { video: media.buffer, caption: media.caption || '✅ Status Saved', mimetype: media.mime || 'video/mp4' });
+        await socket.sendMessage(saveChat, { video: media.buffer, caption: media.caption || '✅ Sᴛᴀᴛᴜꜱ Sᴀᴠᴇᴅ', mimetype: media.mime || 'video/mp4' });
       } else if (quotedMsg.audioMessage) {
         await socket.sendMessage(saveChat, { audio: media.buffer, mimetype: media.mime || 'audio/mp4', ptt: media.ptt || false });
       } else if (quotedMsg.documentMessage) {
         const fname = media.fileName || `saved_document.${(await FileType.fromBuffer(media.buffer))?.ext || 'bin'}`;
         await socket.sendMessage(saveChat, { document: media.buffer, fileName: fname, mimetype: media.mime || 'application/octet-stream' });
       } else if (quotedMsg.stickerMessage) {
-        await socket.sendMessage(saveChat, { image: media.buffer, caption: media.caption || '✅ Sticker Saved' });
+        await socket.sendMessage(saveChat, { image: media.buffer, caption: media.caption || '✅ Sᴛɪᴄᴋᴇʀ Sᴀᴠᴇᴅ' });
       }
 
-      await socket.sendMessage(sender, { text: '🔥 *Status saved successfully!*' }, { quoted: msg });
+      await socket.sendMessage(sender, { text: '🔥 *Sᴛᴀᴛᴜꜱ ꜱᴀᴠᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ*' }, { quoted: msg });
 
     } else if (quotedMsg.conversation || quotedMsg.extendedTextMessage) {
       const text = quotedMsg.conversation || quotedMsg.extendedTextMessage.text;
-      await socket.sendMessage(saveChat, { text: `✅ *Status Saved*\n\n${text}` });
-      await socket.sendMessage(sender, { text: '🔥 *Text status saved successfully!*' }, { quoted: msg });
+      await socket.sendMessage(saveChat, { text: `✅ *Sᴛᴀᴛᴜꜱ ꜱᴀᴠᴇᴅ*\n\n${text}` });
+      await socket.sendMessage(sender, { text: '🔥 *Tᴇxᴛ ꜱᴛᴀᴛᴜꜱ ꜱᴀᴠᴇᴅ ꜱᴜᴄᴄᴇꜱꜰᴜʟʟʏ!*' }, { quoted: msg });
     } else {
       if (typeof socket.copyNForward === 'function') {
         try {
           const key = msg.message?.extendedTextMessage?.contextInfo?.stanzaId || msg.key;
           await socket.copyNForward(saveChat, msg.key, true);
-          await socket.sendMessage(sender, { text: '🔥 *Saved (forwarded) successfully!*' }, { quoted: msg });
+          await socket.sendMessage(sender, { text: '🔥 *Sᴀᴠᴇᴅ ꜱᴜᴄᴄᴇꜱꜰᴜʟʟʏ*' }, { quoted: msg });
         } catch (e) {
-          await socket.sendMessage(sender, { text: '❌ Could not forward the quoted message.' }, { quoted: msg });
+          await socket.sendMessage(sender, { text: '❌ Cᴏᴜʟᴅ ɴᴏᴛ ꜰᴏʀᴡᴀʀᴅ ᴍᴇꜱꜱᴀɢᴇ' }, { quoted: msg });
         }
       } else {
-        await socket.sendMessage(sender, { text: '❌ Unsupported quoted message type.' }, { quoted: msg });
+        await socket.sendMessage(sender, { text: '❌ ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ' }, { quoted: msg });
       }
     }
 
   } catch (error) {
     console.error('❌ Save error:', error);
-    await socket.sendMessage(sender, { text: '*❌ Failed to save status*' }, { quoted: msg });
+    await socket.sendMessage(sender, { text: '*❌ Fᴀɪʟᴇᴅ ᴛᴏ ꜱᴀᴠᴇ ꜱᴛᴀᴛᴜꜱ*' }, { quoted: msg });
   }
   break;
 }
